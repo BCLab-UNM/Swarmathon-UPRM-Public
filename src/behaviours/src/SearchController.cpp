@@ -1,3 +1,5 @@
+#include <ros/ros.h>
+
 #include "SearchController.h"
 #include <angles/angles.h>
 
@@ -25,11 +27,13 @@ void SearchController::Reset() {
  */
 Result SearchController::DoWork() {
 
+
   if (!result.wpts.waypoints.empty()) {
     if (hypot(result.wpts.waypoints[0].x-currentLocation.x, result.wpts.waypoints[0].y-currentLocation.y) < 0.15) {
       attemptCount = 0;
     }
   }
+
 
   if (attemptCount > 0 && attemptCount < 5) {
     attemptCount++;
@@ -52,18 +56,42 @@ Result SearchController::DoWork() {
     {
       first_waypoint = false;
       searchLocation.theta = currentLocation.theta + M_PI;
-      searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
-      searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));
+      searchLocation.x = currentLocation.x + (1.5 * cos(searchLocation.theta));
+      searchLocation.y = currentLocation.y + (1.5 * sin(searchLocation.theta));
+
+      ROS_INFO("UPRM: First Waypoint");
+      ROS_INFO_STREAM("UPRM: Current Location[" << currentLocation.x << ", " << currentLocation.y << ", " << currentLocation.theta << "]");
+      ROS_INFO_STREAM("UPRM: Search  Location[" << searchLocation.x << ", " << searchLocation.y << ", " << searchLocation.theta << "]");
+
     }
     else
     {
       //select new heading from Gaussian distribution around current heading
       searchLocation.theta = rng->gaussian(currentLocation.theta, 0.785398); //45 degrees in radians
-      searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
-      searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));
+      searchLocation.x = currentLocation.x + (5 * cos(searchLocation.theta));
+      searchLocation.y = currentLocation.y + (5 * sin(searchLocation.theta));
+
+      ROS_INFO("UPRM: Next Waypoint");
+      ROS_INFO_STREAM("UPRM: Current Location[" << currentLocation.x << ", " << currentLocation.y << ", " << currentLocation.theta << "]");
+      ROS_INFO_STREAM("UPRM: Search  Location[" << searchLocation.x << ", " << searchLocation.y << ", " << searchLocation.theta << "]");
     }
 
     result.wpts.waypoints.clear();
+    searchLocation.x = -1.5;
+    searchLocation.y = -2.5;
+
+    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
+    searchLocation.x = 3.5;
+    searchLocation.y = -2.5;
+
+    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
+    searchLocation.x = 3.5;
+    searchLocation.y = 2.5;
+
+    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
+    searchLocation.x = -1.5;
+    searchLocation.y = 2.5;
+
     result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
     
     return result;
