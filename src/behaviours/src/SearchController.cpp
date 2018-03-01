@@ -16,10 +16,15 @@ SearchController::SearchController() {
 
   result.fingerAngle = M_PI/2;
   result.wristAngle = M_PI/4;
+
+  search_queue = priority_queue<SearchLocation>();
+  
 }
 
 void SearchController::Reset() {
   result.reset = false;
+
+  search_queue = priority_queue<SearchLocation>();
 }
 
 /**
@@ -68,8 +73,8 @@ Result SearchController::DoWork() {
     {
       //select new heading from Gaussian distribution around current heading
       searchLocation.theta = rng->gaussian(currentLocation.theta, 0.785398); //45 degrees in radians
-      searchLocation.x = currentLocation.x + (5 * cos(searchLocation.theta));
-      searchLocation.y = currentLocation.y + (5 * sin(searchLocation.theta));
+      //searchLocation.x = currentLocation.x + (5 * cos(searchLocation.theta));
+      // searchLocation.y = currentLocation.y + (5 * sin(searchLocation.theta));
 
       ROS_INFO("UPRM: Next Waypoint");
       ROS_INFO_STREAM("UPRM: Current Location[" << currentLocation.x << ", " << currentLocation.y << ", " << currentLocation.theta << "]");
@@ -77,26 +82,26 @@ Result SearchController::DoWork() {
     }
 
     result.wpts.waypoints.clear();
-    searchLocation.x = -1.5;
-    searchLocation.y = -2.5;
-
-    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
-    searchLocation.x = 3.5;
-    searchLocation.y = -2.5;
-
-    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
-    searchLocation.x = 3.5;
-    searchLocation.y = 2.5;
-
-    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
-    searchLocation.x = -1.5;
-    searchLocation.y = 2.5;
-
-    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
+    searchLocation.x = 0;
+    searchLocation.y = 0;
     
+    /*if (!search_queue.empty()) {
+      SearchLocation topSearch = search_queue.top();
+      // search_queue.pop();
+      // searchLocation.x = topSearch.coordinates->x;
+      //searchLocation.y = topSearch.coordinates->y;
+      }*/
+    
+    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
+    //result.wpts.waypoints.clear();
     return result;
   }
 
+}
+
+void SearchController::AddSearchLocation(Point coordinate, int numOfTargets) {
+  SearchLocation searchLocation = SearchLocation{numOfTargets,(Point*)(&coordinate)};
+  search_queue.push(searchLocation);
 }
 
 void SearchController::SetCenterLocation(Point centerLocation) {

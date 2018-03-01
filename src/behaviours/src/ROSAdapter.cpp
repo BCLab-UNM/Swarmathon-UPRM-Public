@@ -284,6 +284,10 @@ void behaviourStateMachine(const ros::TimerEvent&)
       centerMap.y = currentLocationMap.y + (1.3 * sin(currentLocationMap.theta));
       centerMap.theta = centerLocationMap.theta;
       logicController.SetCenterLocationMap(centerMap);
+
+      // TODO: Only For Testing Remember to ERASE
+      int loc1 [4] = {0, 20, 0, 5};
+      //logicController.AddWaypointToSearch(loc1);
       
       centerLocationMap.x = centerMap.x;
       centerLocationMap.y = centerMap.y;

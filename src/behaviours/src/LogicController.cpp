@@ -331,6 +331,18 @@ void LogicController::SetCenterLocationOdom(Point centerLocationOdom)
   dropOffController.SetCenterLocation(centerLocationOdom);
 }
 
+void LogicController::AddWaypointToSearch(int locationWpt[])
+{
+  Point coord;
+  coord.x = locationWpt[0];
+  coord.y = locationWpt[1];
+  coord.theta = locationWpt[2];
+
+  int numOfTags = locationWpt[3];
+
+  searchController.AddSearchLocation(coord, numOfTags);
+}
+
 void LogicController::AddManualWaypoint(Point manualWaypoint, int waypoint_id)
 {
   manualWaypointController.AddManualWaypoint(manualWaypoint, waypoint_id);

@@ -50,6 +50,9 @@ public:
   void RemoveManualWaypoint(int waypoint_id);
   std::vector<int> GetClearedWaypoints();
 
+  // Our Searching methods
+  void AddWaypointToSearch(int locationWpt[]);
+
   void SetModeManual();
   void SetModeAuto();
 
