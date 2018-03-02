@@ -4,6 +4,20 @@
 #include <random_numbers/random_numbers.h>
 #include "Controller.h"
 
+#include <vector>
+#include <queue>
+
+struct SearchLocation {
+  int targetCount = -1;
+  Point* coordinates = nullptr;
+
+  SearchLocation(int targets, Point* coords) : targetCount(targets), coordinates(coords) {}
+
+  inline bool operator <(const SearchLocation& other) const {
+    return targetCount < other.targetCount;
+  }
+};
+
 /**
  * This class implements the search control algorithm for the rovers. The code
  * here should be modified and enhanced to improve search performance.
@@ -26,6 +40,7 @@ public:
   void SetCurrentLocation(Point currentLocation);
   void SetCenterLocation(Point centerLocation);
   void SetSuccesfullPickup();
+  void AddSearchLocation(Point coordinate, int numOfTargets);
 
 protected:
 
@@ -40,6 +55,9 @@ private:
   int attemptCount = 0;
   //struct for returning data to ROS adapter
   Result result;
+
+  // Our waypoint search priority queue
+  priority_queue<SearchLocation> search_queue;
 
   // Search state
   // Flag to allow special behaviour for the first waypoint

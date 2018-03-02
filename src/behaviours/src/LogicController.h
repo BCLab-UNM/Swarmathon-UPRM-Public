@@ -72,12 +72,15 @@ public:
   // been visited.
   std::vector<int> GetClearedWaypoints();
 
-
   // Put the logic controller into manual mode. Changes process state
   // to PROCESS_STATE_MANUAL and logic state to LOGIC_STATE_INTERRUPT.
 
   // If the logic controller is already in manual mode this has no
   // effect.
+
+  // Our Searching methods
+  void AddWaypointToSearch(int locationWpt[]);
+
   void SetModeManual();
 
 
