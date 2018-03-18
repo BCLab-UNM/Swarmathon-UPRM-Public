@@ -121,6 +121,10 @@ char host[128];
 string publishedName;
 char prev_state_machine[128];
 
+int totalRovers = 0;  // UPRM
+int roversCount = 0;
+
+
 // Publishers
 ros::Publisher stateMachinePublish;
 ros::Publisher status_publisher;
@@ -143,6 +147,15 @@ ros::Subscriber virtualFenceSubscriber;
 // manualWaypointSubscriber listens on "/<robot>/waypoints/cmd" for
 // swarmie_msgs::Waypoint messages.
 ros::Subscriber manualWaypointSubscriber;
+
+ros::Subscriber achillesHeartbeatSubscriber;
+ros::Subscriber aeneasHeartbeatSubscriber;
+ros::Subscriber ajaxHeartbeatSubscriber;
+ros::Subscriber diomedesHeartbeatSubscriber;
+ros::Subscriber hectorHeartbeatSubscriber;
+ros::Subscriber parisHeartbeatSubscriber;
+ros::Subscriber thorHeartbeatSubscriber;
+ros::Subscriber zeusHeartbeatSubscriber;
 
 // Timers
 ros::Timer stateMachineTimer;
@@ -171,6 +184,18 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& message);
 void mapHandler(const nav_msgs::Odometry::ConstPtr& message);
 void virtualFenceHandler(const std_msgs::Float32MultiArray& message);
 void manualWaypointHandler(const swarmie_msgs::Waypoint& message);
+
+// BEGIN UPRM
+void achillesHeartbeatHandler(const std_msgs::String& message);
+void aeneasHeartbeatHandler(const std_msgs::String& message);
+void ajaxHeartbeatHandler(const std_msgs::String& message);
+void diomedesHeartbeatHandler(const std_msgs::String& message);
+void hectorHeartbeatHandler(const std_msgs::String& message);
+void parisHeartbeatHandler(const std_msgs::String& message);
+void thorHeartbeatHandler(const std_msgs::String& message);
+void zeusHeartbeatHandler(const std_msgs::String& message);
+// END UPRM
+
 void behaviourStateMachine(const ros::TimerEvent&);
 void publishStatusTimerEventHandler(const ros::TimerEvent& event);
 void publishHeartBeatTimerEventHandler(const ros::TimerEvent& event);
@@ -207,6 +232,18 @@ int main(int argc, char **argv) {
   mapSubscriber = mNH.subscribe((publishedName + "/odom/ekf"), 10, mapHandler);
   virtualFenceSubscriber = mNH.subscribe(("/virtualFence"), 10, virtualFenceHandler);
   manualWaypointSubscriber = mNH.subscribe((publishedName + "/waypoints/cmd"), 10, manualWaypointHandler);
+
+  // BEGIN UPRM
+  achillesHeartbeatSubscriber = mNH.subscribe((string("/achilles") + "/behaviour/heartbeat"), 10, achillesHeartbeatHandler);
+  aeneasHeartbeatSubscriber = mNH.subscribe((string("/aeneas") + "/behaviour/heartbeat"), 10, aeneasHeartbeatHandler);
+  ajaxHeartbeatSubscriber = mNH.subscribe((string("/ajax")+ "/behaviour/heartbeat"), 10, ajaxHeartbeatHandler);
+  diomedesHeartbeatSubscriber = mNH.subscribe((string("/diomedes") + "/behaviour/heartbeat"), 10, diomedesHeartbeatHandler);
+  hectorHeartbeatSubscriber = mNH.subscribe((string("/hector") + "/behaviour/heartbeat"), 10, hectorHeartbeatHandler);
+  parisHeartbeatSubscriber = mNH.subscribe((string("/paris") + "/behaviour/heartbeat"), 10, parisHeartbeatHandler);
+  thorHeartbeatSubscriber = mNH.subscribe((string("/thor") + "/behaviour/heartbeat"), 10, thorHeartbeatHandler);
+  zeusHeartbeatSubscriber = mNH.subscribe((string("/zeus") + "/behaviour/heartbeat"), 10, zeusHeartbeatHandler);
+  // END UPRM
+
   message_filters::Subscriber<sensor_msgs::Range> sonarLeftSubscriber(mNH, (publishedName + "/sonarLeft"), 10);
   message_filters::Subscriber<sensor_msgs::Range> sonarCenterSubscriber(mNH, (publishedName + "/sonarCenter"), 10);
   message_filters::Subscriber<sensor_msgs::Range> sonarRightSubscriber(mNH, (publishedName + "/sonarRight"), 10);
@@ -615,6 +652,48 @@ void publishStatusTimerEventHandler(const ros::TimerEvent&) {
   msg.data = "online";
   status_publisher.publish(msg);
 }
+
+// BEGIN UPRM
+void achillesHeartbeatHandler(const std_msgs::String& message) {
+  totalRovers = max(totalRovers, 1);
+  //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers << " roversCount: " << roversCount);
+}
+
+void aeneasHeartbeatHandler(const std_msgs::String& message) {
+  totalRovers = max(totalRovers, 2);
+  //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
+}
+
+void ajaxHeartbeatHandler(const std_msgs::String& message) {
+  totalRovers = max(totalRovers, 3);
+  //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
+}
+
+void diomedesHeartbeatHandler(const std_msgs::String& message) {
+  totalRovers = max(totalRovers, 4);
+  //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
+}
+
+void hectorHeartbeatHandler(const std_msgs::String& message) {
+  totalRovers = max(totalRovers, 5);
+  //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
+}
+
+void parisHeartbeatHandler(const std_msgs::String& message) {
+  totalRovers = max(totalRovers, 6);
+  //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
+}
+
+void thorHeartbeatHandler(const std_msgs::String& message) {
+  totalRovers = max(totalRovers, 7);  
+  //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
+}
+
+void zeusHeartbeatHandler(const std_msgs::String& message) {
+  totalRovers = max(totalRovers, 8);  
+  //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
+}
+// END UPRM
 
 void manualWaypointHandler(const swarmie_msgs::Waypoint& message) {
   Point wp;
