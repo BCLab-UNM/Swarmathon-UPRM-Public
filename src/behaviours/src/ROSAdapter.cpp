@@ -354,7 +354,9 @@ void behaviourStateMachine(const ros::TimerEvent&)
     logicController.SetCurrentTimeInMilliSecs( getROSTimeInMilliSecs() );
     
     //update center location
-    logicController.SetCenterLocationOdom( updateCenterLocation() );
+    Point center = updateCenterLocation();
+    logicController.SetCenterLocationOdom( center );
+    //ROS_INFO_STREAM("UPRM " << publishedName << " Center at: " << center.x << ", " << center.y);
     
     //ask logic controller for the next set of actuator commands
     result = logicController.DoWork();
@@ -527,6 +529,8 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& message) {
   //Get (x,y) location directly from pose
   currentLocation.x = message->pose.pose.position.x;
   currentLocation.y = message->pose.pose.position.y;
+
+  //ROS_INFO_STREAM("UPRM " << publishedName << "at: [" << currentLocation.x << ", " << currentLocation.y << "]");
   
   //Get theta rotation by converting quaternion orientation to pitch/roll/yaw
   tf::Quaternion q(message->pose.pose.orientation.x, message->pose.pose.orientation.y, message->pose.pose.orientation.z, message->pose.pose.orientation.w);
@@ -826,4 +830,19 @@ void humanTime() {
   }
   
   //cout << "System has been Running for :: " << hoursTime << " : hours " << minutesTime << " : minutes " << timeDiff << "." << frac << " : seconds" << endl; //you can remove or comment this out it just gives indication something is happening to the log file
+}
+
+
+Point localToGlobal(Point local, Point center) {
+  Point global;
+  global.x = local.x - center.x;
+  global.y = local.y - center.y;
+  return global;
+}
+
+Point globalToLocal(Point global, Point center) {
+  Point local;
+  local.x = global.x - center.x;
+  local.y = global.y - center.y;
+  return local;
 }

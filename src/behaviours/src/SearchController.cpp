@@ -61,8 +61,8 @@ Result SearchController::DoWork() {
     {
       first_waypoint = false;
       searchLocation.theta = currentLocation.theta + M_PI;
-      searchLocation.x = currentLocation.x + (1.5 * cos(searchLocation.theta));
-      searchLocation.y = currentLocation.y + (1.5 * sin(searchLocation.theta));
+      searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
+      searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));
 
       ROS_INFO("UPRM: First Waypoint");
       ROS_INFO_STREAM("UPRM: Current Location[" << currentLocation.x << ", " << currentLocation.y << ", " << currentLocation.theta << "]");
@@ -73,8 +73,8 @@ Result SearchController::DoWork() {
     {
       //select new heading from Gaussian distribution around current heading
       searchLocation.theta = rng->gaussian(currentLocation.theta, 0.785398); //45 degrees in radians
-      //searchLocation.x = currentLocation.x + (5 * cos(searchLocation.theta));
-      // searchLocation.y = currentLocation.y + (5 * sin(searchLocation.theta));
+      searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
+      searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));
 
       ROS_INFO("UPRM: Next Waypoint");
       ROS_INFO_STREAM("UPRM: Current Location[" << currentLocation.x << ", " << currentLocation.y << ", " << currentLocation.theta << "]");
@@ -82,8 +82,18 @@ Result SearchController::DoWork() {
     }
 
     result.wpts.waypoints.clear();
-    searchLocation.x = 0;
-    searchLocation.y = 0;
+    Point global;
+    global.x = 0;
+    global.y = -3;
+    searchLocation = SearchController::globalToLocal(global, centerLocation);
+    //searchLocation.x = currentLocation.x;
+    //searchLocation.y = currentLocation.y - 2;
+    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
+    //searchLocation.x = currentLocation.x - 2;
+    //searchLocation.y = currentLocation.y -     
+    //result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
+    //searchLocation.x = 0;
+    //searchLocation.y = 0;
     
     /*if (!search_queue.empty()) {
       SearchLocation topSearch = search_queue.top();
@@ -92,7 +102,6 @@ Result SearchController::DoWork() {
       //searchLocation.y = topSearch.coordinates->y;
       }*/
     
-    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
     //result.wpts.waypoints.clear();
     return result;
   }
@@ -109,7 +118,7 @@ void SearchController::SetCenterLocation(Point centerLocation) {
   float diffX = this->centerLocation.x - centerLocation.x;
   float diffY = this->centerLocation.y - centerLocation.y;
   this->centerLocation = centerLocation;
-  
+
   if (!result.wpts.waypoints.empty())
   {
   result.wpts.waypoints.back().x -= diffX;
@@ -144,4 +153,19 @@ void SearchController::SetTotalRovers(int numRovers) {
   totalRovers = numRovers;
   //ROS_INFO_STREAM("UPRM Total rovers in SearchController: " << totalRovers);
 }
+
+Point SearchController::localToGlobal(Point local, Point center) {
+  Point global;
+  global.x = local.x - center.x;
+  global.y = local.y - center.y;
+  return global;
+}
+
+Point SearchController::globalToLocal(Point global, Point center) {
+  Point local;
+  local.x = global.x + center.x;
+  local.y = global.y + center.y;
+  return local;
+}
+
 // END UPRM

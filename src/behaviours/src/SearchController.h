@@ -42,8 +42,13 @@ public:
   void SetSuccesfullPickup();
   void AddSearchLocation(Point coordinate, int numOfTargets);
 
-  void SetTotalRovers(int numRovers); // UPRM
-  
+  // BEGIN UPRM
+  void SetTotalRovers(int numRovers);
+  Point localToGlobal(Point local, Point center);
+  Point globalToLocal(Point global, Point center);
+  // END UPRM
+    
+
 protected:
 
   void ProcessData();
