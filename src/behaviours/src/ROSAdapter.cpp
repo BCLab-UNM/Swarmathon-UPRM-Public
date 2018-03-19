@@ -122,8 +122,6 @@ string publishedName;
 char prev_state_machine[128];
 
 int totalRovers = 0;  // UPRM
-int roversCount = 0;
-
 
 // Publishers
 ros::Publisher stateMachinePublish;
@@ -656,41 +654,49 @@ void publishStatusTimerEventHandler(const ros::TimerEvent&) {
 // BEGIN UPRM
 void achillesHeartbeatHandler(const std_msgs::String& message) {
   totalRovers = max(totalRovers, 1);
+  logicController.SetTotalRovers(totalRovers);
   //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers << " roversCount: " << roversCount);
 }
 
 void aeneasHeartbeatHandler(const std_msgs::String& message) {
   totalRovers = max(totalRovers, 2);
+  logicController.SetTotalRovers(totalRovers);
   //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
 }
 
 void ajaxHeartbeatHandler(const std_msgs::String& message) {
   totalRovers = max(totalRovers, 3);
+  logicController.SetTotalRovers(totalRovers);
   //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
 }
 
 void diomedesHeartbeatHandler(const std_msgs::String& message) {
   totalRovers = max(totalRovers, 4);
+  logicController.SetTotalRovers(totalRovers);
   //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
 }
 
 void hectorHeartbeatHandler(const std_msgs::String& message) {
   totalRovers = max(totalRovers, 5);
+  logicController.SetTotalRovers(totalRovers);
   //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
 }
 
 void parisHeartbeatHandler(const std_msgs::String& message) {
   totalRovers = max(totalRovers, 6);
+  logicController.SetTotalRovers(totalRovers);
   //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
 }
 
 void thorHeartbeatHandler(const std_msgs::String& message) {
   totalRovers = max(totalRovers, 7);  
+  logicController.SetTotalRovers(totalRovers);
   //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
 }
 
 void zeusHeartbeatHandler(const std_msgs::String& message) {
   totalRovers = max(totalRovers, 8);  
+  logicController.SetTotalRovers(totalRovers);
   //ROS_INFO_STREAM("UPRM TotalRovers: " << totalRovers);
 }
 // END UPRM

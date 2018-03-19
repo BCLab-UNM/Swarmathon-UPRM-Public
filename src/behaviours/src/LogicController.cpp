@@ -380,6 +380,12 @@ void LogicController::SetAprilTags(vector<Tag> tags)
   dropOffController.SetTargetData(tags);
 }
 
+void LogicController::SetTotalRovers(int numRovers) {
+
+  searchController.SetTotalRovers(numRovers);
+  
+}
+
 // Give the specified controllers the sonar sensor values.
 void LogicController::SetSonarData(float left, float center, float right)
 {

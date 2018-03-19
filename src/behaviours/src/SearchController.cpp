@@ -139,4 +139,9 @@ void SearchController::SetSuccesfullPickup() {
   succesfullPickup = true;
 }
 
-
+// BEGIN UPRM
+void SearchController::SetTotalRovers(int numRovers) {
+  totalRovers = numRovers;
+  //ROS_INFO_STREAM("UPRM Total rovers in SearchController: " << totalRovers);
+}
+// END UPRM

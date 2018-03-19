@@ -49,6 +49,7 @@ public:
   // NOTE: This function may be named SetTagData() in other classes
   //       but they are the same function.
   void SetAprilTags(vector<Tag> tags);
+  void SetTotalRovers(int numRovers); // UPRM
   void SetSonarData(float left, float center, float right);
   void SetPositionData(Point currentLocation);
   void SetMapPositionData(Point currentLocationMap);

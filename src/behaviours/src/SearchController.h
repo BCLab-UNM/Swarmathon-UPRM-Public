@@ -42,6 +42,8 @@ public:
   void SetSuccesfullPickup();
   void AddSearchLocation(Point coordinate, int numOfTargets);
 
+  void SetTotalRovers(int numRovers); // UPRM
+  
 protected:
 
   void ProcessData();
@@ -63,6 +65,8 @@ private:
   // Flag to allow special behaviour for the first waypoint
   bool first_waypoint = true;
   bool succesfullPickup = false;
+
+  int totalRovers; // UPRM
 };
 
 #endif /* SEARCH_CONTROLLER */
