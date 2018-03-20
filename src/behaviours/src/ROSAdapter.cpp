@@ -18,6 +18,7 @@
 #include <sensor_msgs/Range.h>
 #include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/Twist.h>
+#include <geographic_msgs/WayPoint.h> // UPRM
 #include <nav_msgs/Odometry.h>
 #include <apriltags_ros/AprilTagDetectionArray.h>
 #include <std_msgs/Float32MultiArray.h>
@@ -36,6 +37,9 @@
 #include <signal.h>
 
 #include <exception> // For exception handling
+
+void distributeTags(vector<Tag> tags);
+
 
 using namespace std;
 
@@ -121,7 +125,12 @@ char host[128];
 string publishedName;
 char prev_state_machine[128];
 
-int totalRovers = 0;  // UPRM
+// BEGIN UPRM
+int totalRovers = 0;
+int nextRover = 0;
+string roverNames[] = {"achilles", "aeneas", "ajax", "diomedes", "hector", "paris", "thor", "zeus"};
+// END UPRM
+
 
 // Publishers
 ros::Publisher stateMachinePublish;
@@ -134,6 +143,10 @@ ros::Publisher heartbeatPublisher;
 // Publishes swarmie_msgs::Waypoint messages on "/<robot>/waypooints"
 // to indicate when waypoints have been reached.
 ros::Publisher waypointFeedbackPublisher;
+
+// BEGIN UPRM
+ros::Publisher tagFetchPublishers[8];
+// END UPRM
 
 // Subscribers
 ros::Subscriber joySubscriber;
@@ -255,6 +268,19 @@ int main(int argc, char **argv) {
   heartbeatPublisher = mNH.advertise<std_msgs::String>((publishedName + "/behaviour/heartbeat"), 1, true);
   waypointFeedbackPublisher = mNH.advertise<swarmie_msgs::Waypoint>((publishedName + "/waypoints"), 1, true);
 
+  // BEGIN UPRM
+  for(int i = 0; i < 8; i++) {
+    tagFetchPublishers[i] = mNH.advertise<swarmie_msgs::Waypoint>((publishedName + "/fetchTag/" + roverNames[i]), 1, true);
+    // tagFetchPublisher[1] = mNH.advertise<swarmie_msgs::Waypoint>((publishedName + "/waypoints"), 1, true);  //UPRM
+    // tagFetchPublisher[2] = mNH.advertise<swarmie_msgs::Waypoint>((publishedName + "/waypoints"), 1, true);  //UPRM
+    // tagFetchPublisher3 = mNH.advertise<swarmie_msgs::Waypoint>((publishedName + "/waypoints"), 1, true);  //UPRM
+    // tagFetchPublisher4 = mNH.advertise<swarmie_msgs::Waypoint>((publishedName + "/waypoints"), 1, true);  //UPRM
+    // tagFetchPublisher5 = mNH.advertise<swarmie_msgs::Waypoint>((publishedName + "/waypoints"), 1, true);  //UPRM
+    // tagFetchPublisher6 = mNH.advertise<swarmie_msgs::Waypoint>((publishedName + "/waypoints"), 1, true);  //UPRM
+    // tagFetchPublisher7 = mNH.advertise<swarmie_msgs::Waypoint>((publishedName + "/waypoints"), 1, true);  //UPRM
+  }
+  //END UPRM
+  
   publish_status_timer = mNH.createTimer(ros::Duration(status_publish_interval), publishStatusTimerEventHandler);
   stateMachineTimer = mNH.createTimer(ros::Duration(behaviourLoopTimeStep), behaviourStateMachine);
   
@@ -504,6 +530,7 @@ void targetHandler(const apriltags_ros::AprilTagDetectionArray::ConstPtr& messag
     }
     
     logicController.SetAprilTags(tags);
+    distributeTags(tags);
   }
   
 }
@@ -845,4 +872,20 @@ Point globalToLocal(Point global, Point center) {
   local.x = global.x - center.x;
   local.y = global.y - center.y;
   return local;
+}
+
+void distributeTags(vector<Tag> tags) {
+  if (totalRovers == 0) return;
+  for (int i = 0; i < tags.size(); i++) {
+    geographic_msgs::WayPoint w;
+    w.position.altitude = tags[i].getID(); // Use altitude field for tag ID
+    w.position.latitude = tags[i].getPositionX();
+    w.position.longitude = tags[i].getPositionY();
+    tagFetchPublishers[nextRover].publish(w);
+    ROS_INFO_STREAM("UPRM Tag Published: ["
+		    << w.position.latitude << ","
+		    << w.position.longitude << ","
+		    << w.position.altitude << "]");
+    nextRover = (nextRover + 1) % totalRovers;
+  }
 }
