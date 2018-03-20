@@ -57,35 +57,35 @@ Result SearchController::DoWork() {
     Point  searchLocation;
 
     //select new position 50 cm from current location
-    if (first_waypoint)
-    {
-      first_waypoint = false;
-      searchLocation.theta = currentLocation.theta + M_PI;
-      searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
-      searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));
+    // if (first_waypoint)
+    // {
+    //   first_waypoint = false;
+    //   searchLocation.theta = currentLocation.theta + M_PI;
+    //   searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
+    //   searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));
 
-      ROS_INFO("UPRM: First Waypoint");
-      ROS_INFO_STREAM("UPRM: Current Location[" << currentLocation.x << ", " << currentLocation.y << ", " << currentLocation.theta << "]");
-      ROS_INFO_STREAM("UPRM: Search  Location[" << searchLocation.x << ", " << searchLocation.y << ", " << searchLocation.theta << "]");
+    //   ROS_INFO("UPRM: First Waypoint");
+    //   ROS_INFO_STREAM("UPRM: Current Location[" << currentLocation.x << ", " << currentLocation.y << ", " << currentLocation.theta << "]");
+    //   ROS_INFO_STREAM("UPRM: Search  Location[" << searchLocation.x << ", " << searchLocation.y << ", " << searchLocation.theta << "]");
 
-    }
-    else
-    {
-      //select new heading from Gaussian distribution around current heading
-      searchLocation.theta = rng->gaussian(currentLocation.theta, 0.785398); //45 degrees in radians
-      searchLocation.x = currentLocation.x + (0.5 * cos(searchLocation.theta));
-      searchLocation.y = currentLocation.y + (0.5 * sin(searchLocation.theta));
+    // }
+    // else
+    // {
+    //   //select new heading from Gaussian distribution around current heading
+    searchLocation.theta = rng->gaussian(currentLocation.theta, 0.785398); //45 degrees in radians
+    searchLocation.x = currentLocation.x + (2.0 * cos(searchLocation.theta));
+    searchLocation.y = currentLocation.y + (2.0 * sin(searchLocation.theta));
 
-      ROS_INFO("UPRM: Next Waypoint");
-      ROS_INFO_STREAM("UPRM: Current Location[" << currentLocation.x << ", " << currentLocation.y << ", " << currentLocation.theta << "]");
-      ROS_INFO_STREAM("UPRM: Search  Location[" << searchLocation.x << ", " << searchLocation.y << ", " << searchLocation.theta << "]");
-    }
+    //   ROS_INFO("UPRM: Next Waypoint");
+    //   ROS_INFO_STREAM("UPRM: Current Location[" << currentLocation.x << ", " << currentLocation.y << ", " << currentLocation.theta << "]");
+    //   ROS_INFO_STREAM("UPRM: Search  Location[" << searchLocation.x << ", " << searchLocation.y << ", " << searchLocation.theta << "]");
+    // }
 
     result.wpts.waypoints.clear();
-    Point global;
-    global.x = 0;
-    global.y = -3;
-    searchLocation = SearchController::globalToLocal(global, centerLocation);
+    // Point global;
+    // global.x = 0;
+    // global.y = -3;
+    // searchLocation = SearchController::globalToLocal(global, centerLocation);
     //searchLocation.x = currentLocation.x;
     //searchLocation.y = currentLocation.y - 2;
     result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
