@@ -530,7 +530,7 @@ void targetHandler(const apriltags_ros::AprilTagDetectionArray::ConstPtr& messag
       tags.push_back(loc);
     }
     
-    distributeTags(tags);
+    //distributeTags(tags);
     logicController.SetAprilTags(tags);
 
   }

@@ -66,7 +66,7 @@ Result SearchController::DoWork() {
     // }
 
     result.wpts.waypoints.clear();
-    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), globalToLocal(searchLocation,centerLocation));
+    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
     
     /*if (!search_queue.empty()) {
       SearchLocation topSearch = search_queue.top();
