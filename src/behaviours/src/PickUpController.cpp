@@ -1,3 +1,4 @@
+#include <ros/ros.h>
 #include "PickUpController.h"
 #include <limits> // For numeric limits
 #include <cmath> // For hypot
@@ -25,6 +26,7 @@ PickUpController::~PickUpController() { /*Destructor*/  }
 void PickUpController::SetTagData(vector<Tag> tags)
 {
 
+  ROS_INFO_STREAM("UPRM April Tag found: " << tags.size());
   if (tags.size() > 0)
   {
 
@@ -40,6 +42,7 @@ void PickUpController::SetTagData(vector<Tag> tags)
     for (int i = 0; i < tags.size(); i++)
     {
 
+      ROS_INFO_STREAM("UPRM Target found: " << i << " ID: " << tags[i].getID());
       if (tags[i].getID() == 0)
       {
 
