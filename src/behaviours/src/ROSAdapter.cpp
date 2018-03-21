@@ -128,6 +128,7 @@ char prev_state_machine[128];
 // BEGIN UPRM
 int totalRovers = 0;
 int nextRover = 0;
+Point lastTarget;
 string roverNames[] = {"achilles", "aeneas", "ajax", "diomedes", "hector", "paris", "thor", "zeus"};
 // END UPRM
 
@@ -529,8 +530,8 @@ void targetHandler(const apriltags_ros::AprilTagDetectionArray::ConstPtr& messag
       tags.push_back(loc);
     }
     
+    distributeTags(tags);
     logicController.SetAprilTags(tags);
-    //distributeTags(tags);
   }
   
 }
@@ -874,18 +875,48 @@ Point globalToLocal(Point global, Point center) {
   return local;
 }
 
+double myDistance(Point p1, Point p2) {
+  double deltax = p1.x - p2.x;
+  double deltay = p1.y - p2.y;
+  double result = sqrt(deltax * deltax + deltay * deltay);
+  return result;
+}
+
 void distributeTags(vector<Tag> tags) {
-  if (totalRovers == 0) return;
+  //if (totalRovers == 0) return;
+  int numTargets = 0;
+  Point nextTarget;
+  nextTarget.x = currentLocation.x;
+  nextTarget.y = currentLocation.y;
   for (int i = 0; i < tags.size(); i++) {
-    geographic_msgs::WayPoint w;
-    w.position.altitude = tags[i].getID(); // Use altitude field for tag ID
-    w.position.latitude = tags[i].getPositionX();
-    w.position.longitude = tags[i].getPositionY();
-    tagFetchPublishers[nextRover].publish(w);
-    ROS_INFO_STREAM("UPRM Tag Published: ["
-		    << w.position.latitude << ","
-		    << w.position.longitude << ","
-		    << w.position.altitude << "]");
-    nextRover = (nextRover + 1) % totalRovers;
+    if (tags[i].getID() == 0) {
+      numTargets++;
+    }
   }
+
+  double distance = myDistance(nextTarget, lastTarget);
+  if (numTargets > 3) {
+    ROS_INFO_STREAM("UPRM LastTarget at: [" << lastTarget.x << "," << lastTarget.y << "]");
+    ROS_INFO_STREAM("UPRM NextTarget at: [" << nextTarget.x << "," << nextTarget.y << "]");
+    ROS_INFO_STREAM("UPRM Distance from last Cluster: " << distance);
+  }
+  if ((myDistance(nextTarget, lastTarget) > 0.5) && (numTargets > 3)) {
+    // New Cluster Detected
+    ROS_INFO_STREAM("UPRM New Cluster detected at: [" << nextTarget.x << "," << nextTarget.y << "]");
+    // Publish location of new cluster
+    
+    
+    // Remember this cluster location
+    lastTarget = nextTarget;
+  }
+  // geographic_msgs::WayPoint w;
+  // w.position.altitude = tags[i].getID(); // Use altitude field for tag ID
+  // w.position.latitude = tags[i].getPositionX();
+  // w.position.longitude = tags[i].getPositionY();
+  // tagFetchPublishers[nextRover].publish(w);
+  // ROS_INFO_STREAM("UPRM Tag Published: ["
+  // 		    << w.position.latitude << ","
+  // 		    << w.position.longitude << ","
+  // 		    << w.position.altitude << "]");
+  // nextRover = (nextRover + 1) % totalRovers;
 }
