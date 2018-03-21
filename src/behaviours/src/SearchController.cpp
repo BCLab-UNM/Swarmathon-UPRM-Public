@@ -88,7 +88,9 @@ Result SearchController::DoWork() {
     // searchLocation = SearchController::globalToLocal(global, centerLocation);
     //searchLocation.x = currentLocation.x;
     //searchLocation.y = currentLocation.y - 2;
-    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
+    searchLocation.x = 0;
+    searchLocation.y = -10;
+    result.wpts.waypoints.insert(result.wpts.waypoints.begin(), globalToLocal(searchLocation,centerLocation));
     //searchLocation.x = currentLocation.x - 2;
     //searchLocation.y = currentLocation.y -     
     //result.wpts.waypoints.insert(result.wpts.waypoints.begin(), searchLocation);
